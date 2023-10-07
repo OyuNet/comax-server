@@ -16,8 +16,7 @@ app.get("/auth", function(req, res) {
 
     userdata.map((x) => {
         if (x["username"] === username && x["password"] === password) {
-            res.header('Access-Control-Allow-Origin', "*");
-            res.sendStatus(200);
+            res.header('Access-Control-Allow-Origin', "*").sendStatus(200);
         }
     })
 
@@ -42,25 +41,25 @@ app.get("/register", function(req, res) {
 
     if (err) {
         return;
-    }
-
-    const acc = {
-        username: username,
-        password: password,
-        type: "user"
-    }
-
-    let newUserdata = userdata;
-    newUserdata.push(acc);
-
-    fs.writeFileSync("./data.json", JSON.stringify(newUserdata, null, 2), (err) => {
-        if (err) {
-            console.error("Data write error.")
-        } else {
-            res.header("Access-Control-Allow-Origin", "*");
-            res.sendStatus(200);
+    } else {
+        const acc = {
+            username: username,
+            password: password,
+            type: "user"
         }
-    })
+    
+        let newUserdata = userdata;
+        newUserdata.push(acc);
+    
+        fs.writeFileSync("./data.json", JSON.stringify(newUserdata, null, 2), (err) => {
+            if (err) {
+                console.error("Data write error.")
+            } else {
+                res.header("Access-Control-Allow-Origin", "*");
+                res.sendStatus(200);
+            }
+        })
+    } 
 
 })
 
