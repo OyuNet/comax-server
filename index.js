@@ -16,11 +16,19 @@ app.get("/auth", function(req, res) {
 
     userdata.map((x) => {
         if (x["username"] === username && x["password"] === password) {
-            res.header('Access-Control-Allow-Origin', "*").sendStatus(200);
+            res.header('Access-Control-Allow-Origin', "*")
+            const obj = {
+                status: "ok"
+            }
+            res.json(obj)
         }
     })
 
-    return res.sendStatus(404);
+    const obj = {
+        status: "error"
+    }
+    res.header('Access-Control-Allow-Origin', "*")
+    res.json(obj)
 })
 
 app.get("/register", function(req, res) {
@@ -34,7 +42,10 @@ app.get("/register", function(req, res) {
     userdata.map((x) => {
         if (x["username"] === username) {
             res.header("Access-Control-Allow-Origin", "*");
-            res.sendStatus(400);
+            const obj = {
+                status: "error"
+            }
+            res.json(obj)
             err = true;
         }
     })
@@ -56,7 +67,10 @@ app.get("/register", function(req, res) {
                 console.error("Data write error.")
             } else {
                 res.header("Access-Control-Allow-Origin", "*");
-                res.sendStatus(200);
+                const obj = {
+                    status: "ok"
+                }
+                res.json(obj)
             }
         })
     } 
