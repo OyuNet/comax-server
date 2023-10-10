@@ -14,6 +14,8 @@ app.get("/auth", function(req, res) {
     const username = req.query.username;
     const password = req.query.password;
 
+    let isOk = false
+
     userdata.map((x) => {
         if (x["username"] === username && x["password"] === password) {
             res.header('Access-Control-Allow-Origin', "*")
@@ -21,14 +23,20 @@ app.get("/auth", function(req, res) {
                 status: "ok"
             }
             res.json(obj)
+
+            isOk = true;
         }
     })
 
-    const obj = {
-        status: "error"
+    if (isOk) {
+        // belki sonra bir şeyler yapılır.
+    } else {
+        const obj = {
+            status: "error"
+        }
+        res.header('Access-Control-Allow-Origin', "*")
+        res.json(obj)
     }
-    res.header('Access-Control-Allow-Origin', "*")
-    res.json(obj)
 })
 
 app.get("/register", function(req, res) {
