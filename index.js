@@ -23,6 +23,7 @@ app.get("/auth", function(req, res) {
             const obj = {
                 status: "ok"
             }
+            res.header("Access-Control-Allow-Origin", "*");
             res.json(obj)
 
             isOk = true;
@@ -54,6 +55,7 @@ app.get("/register", function(req, res) {
             const obj = {
                 status: "error"
             }
+            res.header("Access-Control-Allow-Origin", "*");
             res.json(obj)
             err = true;
         }
@@ -79,6 +81,7 @@ app.get("/register", function(req, res) {
                 const obj = {
                     status: "ok"
                 }
+                res.header("Access-Control-Allow-Origin", "*");
                 res.json(obj)
             }
         })
@@ -103,11 +106,13 @@ app.get("/isStaff", async function(req, res) {
         const obj = {
             status: "ok"
         }
+        res.header("Access-Control-Allow-Origin", "*");
         res.json(obj)
     } else {
         const obj = {
             status: "error"
         }
+        res.header("Access-Control-Allow-Origin", "*");
         res.json(obj)
     }
 
@@ -134,8 +139,57 @@ app.get("/tickets", async function(req, res) {
             status: "ok",
             content: userTickets
         }
+        res.header("Access-Control-Allow-Origin", "*");
         res.json(obj)
     } else {
+        const obj = {
+            status: "error"
+        }
+        res.header("Access-Control-Allow-Origin", "*");
+        res.json(obj)
+    }
+})
+
+app.get("/tickets/add", async function(req, res) {
+    const username = req.query.username
+    const password = req.query.password
+    const title = req.query.title
+    const desc = req.query.desc
+
+    const response = await axios.get("http://localhost:8000/auth", { params: { username: username, password: password }})
+    const data = response.data;
+
+    if (data["status"] === "ok") {
+        const newTicket = {
+            user: username,
+            title: title,
+            desc: desc
+        }
+
+        let tickets = require("./tickets.json")
+        tickets.push(newTicket)
+
+        fs.writeFileSync("./data.json", JSON.stringify(tickets, null, 2), (err) => {
+            if (err) {
+                res.header("Access-Control-Allow-Origin", "*");
+                console.error("Data write error.")
+                const obj = {
+                    status: "error"
+                }
+                res.json(obj)
+            } else {
+                res.header("Access-Control-Allow-Origin", "*");
+                const obj = {
+                    status: "ok"
+                }
+                res.json(obj)
+
+            }
+        })
+
+    } else {
+        res.header("Access-Control-Allow-Origin", "*");
+        console.error("Data write error.")
         const obj = {
             status: "error"
         }
