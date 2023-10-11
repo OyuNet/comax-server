@@ -1,9 +1,10 @@
 const express = require("express")
 const fs = require("fs")
 const app = express()
+const axios = require("axios")
 
 app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "localhost"); // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Origin", "localhost");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 })
@@ -82,7 +83,36 @@ app.get("/register", function(req, res) {
             }
         })
     } 
+})
 
+app.get("/tickets", async function(req, res) {
+    const ticketData = require('./tickets.json')
+    const username = req.query.username
+    const password = req.query.password
+
+    let userTickets = [];
+
+    const response = await axios.get("http://localhost:8000/auth", { params: { username: username, password: password }})
+    const data = response.data;
+
+    if (data["status"] === "ok") {
+        ticketData.map((x) => {
+            if (x["user"] === username) {
+                userTickets.push(x);
+            }
+        })
+    
+        const obj = {
+            status: "ok",
+            content: userTickets
+        }
+        res.json(obj)
+    } else {
+        const obj = {
+            status: "error"
+        }
+        res.json(obj)
+    }
 })
 
 app.listen(8000)
