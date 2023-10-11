@@ -85,6 +85,34 @@ app.get("/register", function(req, res) {
     } 
 })
 
+app.get("/isStaff", async function(req, res) {
+    const data = require("./data.json")
+    const username = req.query.username
+
+    let status = false;
+
+    data.map((x) => {
+        if (username === x["username"]) {
+            if (x["type"] === "admin") {
+                status = true;
+            }
+        }
+    })
+
+    if (status) {
+        const obj = {
+            status: "ok"
+        }
+        res.json(obj)
+    } else {
+        const obj = {
+            status: "error"
+        }
+        res.json(obj)
+    }
+
+})
+
 app.get("/tickets", async function(req, res) {
     const ticketData = require('./tickets.json')
     const username = req.query.username
