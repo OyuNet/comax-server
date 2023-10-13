@@ -9,6 +9,13 @@ app.use(function(req, res, next) {
     next();
 })
 
+async function queryStaff(username, password, isStaff) {
+    const res = await axios.get("http://localhost:8000/isStaff", { params: { username: username, password: password }})
+    const data = res.data;
+
+    isStaff = data["status"] === "ok" ? true : false
+}
+
 app.get("/auth", function(req, res) {
     const userdata = require("./data.json")
 
@@ -195,6 +202,66 @@ app.get("/tickets/add", async function(req, res) {
         }
         res.json(obj)
     }
+})
+
+app.get("/tickets/remove", function(req, res) {
+    const username = req.query.username
+    const password = req.query.password
+    const ticketTitle = req.query.title
+    let isStaff;
+    const ticketData = require("./tickets.json")
+
+    if (isStaff) {
+
+        let indexNum = 0;
+        let toRemovedNums = [];
+
+        ticketData.map((x) => {
+            if (x["title"] == ticketTitle && x["user"] == username) {
+                toRemovedNums.push(indexNum)
+            }
+            indexNum++;
+        })
+
+        let newTicketData = [];
+        let indexNum2 = 0;
+
+        ticketData.map((x) => {
+            toRemovedNums.map((y) => {
+                if (y == indexNum2) {
+
+                } else {
+                    newTicketData.push(x)
+                }
+            })
+
+            indexNum2++;
+        })
+
+        fs.writeFileSync("./tickets.json", JSON.stringify(newTicketData, null, 2), (err) => {
+            if (err) {
+                console.error("Data write error.")
+                const obj = {
+                    status: "error"
+                }
+                res.header("Access-Control-Allow-Origin", "*")
+                res.json(obj)
+            } else {
+                const obj = {
+                    status: "ok"
+                }
+                res.header("Access-Control-Allow-Origin", "*");
+                res.json(obj)
+            }
+        })
+
+    } else {
+        const obj = {
+            status: "error"
+        }
+        res.json(obj)
+    }
+
 })
 
 app.listen(8000)
