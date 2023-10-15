@@ -264,6 +264,46 @@ app.get("/tickets/remove", function(req, res) {
 
 })
 
+app.get("/projects/add", function(req, res) {
+    const projectName = req.query.projectName;
+    const projectDesc = req.query.projectDesc;
+    const projectImg = req.query.projectImg;
+
+    let projectsData = require("./projects.json");
+
+    if (projectDesc != null || projectName != null || projectImg != null) {
+        const obj = {
+            status: "error"
+        }
+        res.header("Access-Control-Allow-Origin", "*")
+        res.json(obj)
+    } else {
+        const dataObj = {
+            projectName: projectName,
+            projectDesc: projectDesc,
+            projectImg: projectImg
+        }
+        projectsData.push(dataObj);
+
+        fs.writeFileSync("./projects.json", JSON.stringify(dataObj, null, 2), (err) => {
+            if (err) {
+                console.error(err)
+                const obj = {
+                    status: "error"
+                }
+                res.header("Access-Control-Allow-Origin", "*")
+                res.json(obj)
+            } else {
+                const obj = {
+                    status: "ok"
+                }
+                res.header("Access-Control-Allow-Origin", "*")
+                res.json(obj)
+            }
+        })
+    }
+})
+
 app.listen(8000)
 
 console.log("Listening port 8000.")
