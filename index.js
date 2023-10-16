@@ -3,6 +3,22 @@ const fs = require("fs")
 const app = express()
 const axios = require("axios")
 
+function resOk(res) {
+    const obj = {
+        status: "ok"
+    }
+    res.header("Access-Control-Allow-Origin", "*");
+    res.json(obj)
+}
+
+function resErr(res) {
+    const obj = {
+        status: "error"
+    }
+    res.header("Access-Control-Allow-Origin", "*");
+    res.json(obj)
+}
+
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "localhost");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -26,12 +42,7 @@ app.get("/auth", function(req, res) {
 
     userdata.map((x) => {
         if (x["username"] === username && x["password"] === password) {
-            res.header('Access-Control-Allow-Origin', "*")
-            const obj = {
-                status: "ok"
-            }
-            res.header("Access-Control-Allow-Origin", "*");
-            res.json(obj)
+            resOk(res)
 
             isOk = true;
         }
@@ -40,11 +51,7 @@ app.get("/auth", function(req, res) {
     if (isOk) {
         // belki sonra bir şeyler yapılır.
     } else {
-        const obj = {
-            status: "error"
-        }
-        res.header('Access-Control-Allow-Origin', "*")
-        res.json(obj)
+        resErr(res)
     }
 })
 
@@ -58,12 +65,7 @@ app.get("/register", function(req, res) {
 
     userdata.map((x) => {
         if (x["username"] === username) {
-            res.header("Access-Control-Allow-Origin", "*");
-            const obj = {
-                status: "error"
-            }
-            res.header("Access-Control-Allow-Origin", "*");
-            res.json(obj)
+            resErr(res)
             err = true;
         }
     })
@@ -84,12 +86,7 @@ app.get("/register", function(req, res) {
             if (err) {
                 console.error("Data write error.")
             } else {
-                res.header("Access-Control-Allow-Origin", "*");
-                const obj = {
-                    status: "ok"
-                }
-                res.header("Access-Control-Allow-Origin", "*");
-                res.json(obj)
+                resOk(res)
             }
         })
     } 
@@ -110,17 +107,9 @@ app.get("/isStaff", async function(req, res) {
     })
 
     if (status) {
-        const obj = {
-            status: "ok"
-        }
-        res.header("Access-Control-Allow-Origin", "*");
-        res.json(obj)
+        resOk(res)
     } else {
-        const obj = {
-            status: "error"
-        }
-        res.header("Access-Control-Allow-Origin", "*");
-        res.json(obj)
+        resErr(res)
     }
 
 })
@@ -142,18 +131,9 @@ app.get("/tickets", async function(req, res) {
             }
         })
     
-        const obj = {
-            status: "ok",
-            content: userTickets
-        }
-        res.header("Access-Control-Allow-Origin", "*");
-        res.json(obj)
+        resOk(res)
     } else {
-        const obj = {
-            status: "error"
-        }
-        res.header("Access-Control-Allow-Origin", "*");
-        res.json(obj)
+        resErr(res)
     }
 })
 
@@ -178,29 +158,17 @@ app.get("/tickets/add", async function(req, res) {
 
         fs.writeFileSync("./data.json", JSON.stringify(tickets, null, 2), (err) => {
             if (err) {
-                res.header("Access-Control-Allow-Origin", "*");
                 console.error("Data write error.")
-                const obj = {
-                    status: "error"
-                }
-                res.json(obj)
+                resErr(res)
             } else {
-                res.header("Access-Control-Allow-Origin", "*");
-                const obj = {
-                    status: "ok"
-                }
-                res.json(obj)
+                resOk(res)
 
             }
         })
 
     } else {
-        res.header("Access-Control-Allow-Origin", "*");
         console.error("Data write error.")
-        const obj = {
-            status: "error"
-        }
-        res.json(obj)
+        resErr(res)
     }
 })
 
@@ -241,25 +209,14 @@ app.get("/tickets/remove", function(req, res) {
         fs.writeFileSync("./tickets.json", JSON.stringify(newTicketData, null, 2), (err) => {
             if (err) {
                 console.error("Data write error.")
-                const obj = {
-                    status: "error"
-                }
-                res.header("Access-Control-Allow-Origin", "*")
-                res.json(obj)
+                resErr(res)
             } else {
-                const obj = {
-                    status: "ok"
-                }
-                res.header("Access-Control-Allow-Origin", "*");
-                res.json(obj)
+                resOk(res)
             }
         })
 
     } else {
-        const obj = {
-            status: "error"
-        }
-        res.json(obj)
+        resErr(res)
     }
 
 })
@@ -272,11 +229,7 @@ app.get("/projects/add", function(req, res) {
     let projectsData = require("./projects.json");
 
     if (projectDesc != null || projectName != null || projectImg != null) {
-        const obj = {
-            status: "error"
-        }
-        res.header("Access-Control-Allow-Origin", "*")
-        res.json(obj)
+        resErr(res)
     } else {
         const dataObj = {
             projectName: projectName,
@@ -288,17 +241,9 @@ app.get("/projects/add", function(req, res) {
         fs.writeFileSync("./projects.json", JSON.stringify(dataObj, null, 2), (err) => {
             if (err) {
                 console.error(err)
-                const obj = {
-                    status: "error"
-                }
-                res.header("Access-Control-Allow-Origin", "*")
-                res.json(obj)
+                resErr(res)
             } else {
-                const obj = {
-                    status: "ok"
-                }
-                res.header("Access-Control-Allow-Origin", "*")
-                res.json(obj)
+                resOk(res)
             }
         })
     }
